@@ -1,0 +1,38 @@
+server:
+  port: 8081
+spring:
+  profiles:
+    active: local
+  cloud:
+    stream:
+      function:
+        definition: processDomainStream
+      bindings:
+        processDomainStream-in-0:
+          destination: domains-raw
+        processDomainStream-out-0:
+          destination: domains-active
+      kafka:
+        bindings:
+          processDomainStream-in-0:
+            consumer:
+              configuration:
+                value:
+                  deserializer: org.springframework.kafka.support.serializer.JsonSerializer
+          processDomainStream-out-0:
+            producer:
+              configuration:
+                value:
+                  deserializer: org.springframework.kafka.support.serializer.JsonSerializer
+      binder:
+        brokers:
+          - localhost:9091
+          - localhost:9092
+  kafka:
+    consumer:
+      properties:
+        spring.json.trusted.packages: "*"
+allow:
+  auto:
+    create:
+      topics: false
